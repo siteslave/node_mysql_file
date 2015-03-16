@@ -1,0 +1,10 @@
+node_modules
+bower_components
+.idea
+*.png
+*.jpg
+*.gif
+*.pdf
+*.zip
+*.7z
+*.rar

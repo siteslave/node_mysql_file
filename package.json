@@ -1,0 +1,15 @@
+{
+  "name": "node_files",
+  "version": "1.0.0",
+  "description": "node file",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "satit rianpit",
+  "license": "ISC",
+  "dependencies": {
+    "knex": "^0.7.6",
+    "mysql": "^2.5.5"
+  }
+}

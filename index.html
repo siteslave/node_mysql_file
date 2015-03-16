@@ -1,0 +1,95 @@
+<html>
+    <head>
+        <title>Read file</title>
+    </head>
+    <script src="bower_components/angular/angular.min.js"></script>
+    <body>
+    <script>
+        var fs = require('fs');
+        var knex = require('knex')({
+            client: 'mysql',
+            connection: {
+                host: 'localhost',
+                database: 'test',
+                user: 'root',
+                password: '789124'
+            }
+        });
+
+        var gui = require('nw.gui');
+
+
+        angular.module('app', [])
+                .controller('MainController', function ($scope) {
+
+                    $scope.getFileContent = function (file) {
+                        var bitmap = fs.readFileSync(file);
+                        return bitmap;
+                    };
+
+                    $scope.doCreateFile = function (data, file) {
+                        var bitmap = new Buffer(data, 'base64');
+                        fs.writeFileSync(file, bitmap);
+                        alert('flie created.');
+                    };
+
+                    $scope.insertFile = function () {
+                        var file = angular.element(document.querySelector('#fileName'));
+                        var fullFilePath = file[0].value;
+
+                        var data = $scope.getFileContent(fullFilePath);
+
+                        knex('files')
+                            .insert({
+                                file_type: $scope.fileType,
+                                file_name: $scope.fileName,
+                                file_size: $scope.fileSize,
+                                data: data
+                            })
+                            .exec(function (err) {
+                                if (err) console.log(err);
+                                else {
+                                    console.log('Success');
+                                }
+                            });
+
+                    };
+
+                    $scope.setPrompt = function (elm) {
+                        //console.log(elm.files[0]);
+                        if (elm.files) {
+                            $scope.isPrompt = true;
+                            $scope.fileType = elm.files[0].type;
+                            $scope.fileName = elm.files[0].name;
+                            $scope.fileSize = elm.files[0].size;
+                            //console.log($scope.fileType);
+                        } else {
+                            $scope.isPrompt = false;
+                        }
+                    };
+
+                    $scope.createFile = function () {
+                        knex('files')
+                                .select()
+                                .where('file_name', $scope.fileName)
+                                .limit(1)
+                                .exec(function (err, rows) {
+                                    if (err) console.log(err);
+                                    else {
+
+                                        $scope.doCreateFile(rows[0].data, rows[0].file_name);
+                                        gui.Shell.openItem(rows[0].file_name);
+                                    }
+                                });
+                    };
+                });
+
+    </script>
+    <div ng-app="app" ng-controller="MainController">
+        <input type="file" name="file" id="fileName" onchange="angular.element(this).scope().setPrompt(this)"/>
+        <button type="button" ng-click="insertFile()">Insert file to database</button>
+        <button type="button" ng-click="createFile()">Create file from database</button>
+    </div>
+
+    </body>
+</html>
