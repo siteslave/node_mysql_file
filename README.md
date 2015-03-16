@@ -4,6 +4,8 @@
 
 `bower install`
 
+`npm install`
+
 `nw .`
 
 ## ฐานข้อมูล
